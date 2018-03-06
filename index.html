@@ -2,10 +2,48 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>
-    </title>
+    <title></title>
+    <link rel="stylesheet" href="index.css">
+
   </head>
   <body>
+    <div class="Nav">
+      <ul>
+        <li><a id="home" href="#home">Home</a></li>
+        <li><a href="#About">About</a></li>
+        <li class="dropdown">
+          <a href="javascript:void(0)" class="dropbtn">Browse</a>
+          <div class="dropdown-content">
+            <a id="DaThings1">DaThings1</a>
+            <a id="cs188">cs188</a>
+            <a id="KroboProductions">KroboProductions</a>
+            <a id="DurhamrockerZ">DurhamrockerZ</a>
+          </div>
+        </li>
+
+        <li style="float:right"><a id="searchButton" href="#search">Search</a></li>
+        <li id= "searchBar" style="float:right"><input id="search" placeholder="Search..." type="search"></li>
+      </ul>
+    </div>
+
+
+    <div id="main"></div>
+
+    
+    <script src="https://www.gstatic.com/firebasejs/4.10.1/firebase.js"></script>
+    <script>
+      // Initialize Firebase
+      var config = {
+        apiKey: "AIzaSyBtoHk5PEG-pm8QTxisTRMuALv7lbFBnMI",
+        authDomain: "ytpclub-196816.firebaseapp.com",
+        databaseURL: "https://ytpclub-196816.firebaseio.com",
+        projectId: "ytpclub-196816",
+        storageBucket: "ytpclub-196816.appspot.com",
+        messagingSenderId: "215843731019"
+      };
+      firebase.initializeApp(config);
+    </script>
+    <script defer src= "index.js" type="text/javascript"></script>
 
   </body>
 </html>
