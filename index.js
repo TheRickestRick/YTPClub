@@ -14,7 +14,19 @@
   let previousPageToken;
   let nextPageButton = document.getElementsByClassName("next")[0];
   let previousPageButton = document.getElementsByClassName("previous")[0];
+  let saveVideo = document.getElementById("saveButton");
+  let favVideoID;
+  let login = document.getElementById("login");
 
+  let loginDiv = document.createElement('div');
+  loginDiv.setAttribute("style", "padding:10%")
+  let loginCred = `
+   <form>
+   <input id="input1" type="text">
+   <input id="input2" type="text">
+   <input id="loginBtn" type="submit">
+   </form>
+    `
 
   function renderData(movies){
     main.innerHTML = "";
@@ -50,31 +62,24 @@
 
         let videoContainer = document.createElement('div');
         let identity = movie.id.videoId;
-        let rating = document.createElement('div');
+        let videoActions = document.createElement('div');
         let video = document.createElement('iframe');
-        let ratingForm = `
+        favVideoID = movie.id.videoId;
+        let saveButton = `
         <form>
-          <fieldset>
-            <span id="star-cb-group">
-              <input type="radio" id="rating-0" name="rating" value="0" /><label for="rating-0">0</label>
-              <input type="radio" id="rating-1" name="rating" value="1" checked="checked" /><label for="rating-1">1</label>
-              <input type="radio" id="rating-2" name="rating" value="2" /><label for="rating-2">2</label>
-              <input type="radio" id="rating-3" name="rating" value="3" /><label for="rating-3">3</label>
-              <input type="radio" id="rating-4" name="rating" value="4" /><label for="rating-4">4</label>
-              <input type="radio" id="rating-5" name="rating" value="5" class="star-cb-clear" /><label for="rating-5">5</label>
-            </span>
-          </fieldset>
+        <input id="saveButton" type="button" value="Save Video">
         </form>
         `
-
         window.location.hash = "#video";
         main.innerHTML = "";
-        rating.innerHTML = ratingForm;
+        videoActions.innerHTML = saveButton;
         videoContainer.appendChild(video);
-        videoContainer.appendChild(rating);
+        videoContainer.appendChild(videoActions);
         video.setAttribute("style", "padding:10px; margin-left:6%;margin-top:2%; height:600px; width:1200px")
         video.src = `https://www.youtube.com/embed/${movie.id.videoId}?controls=2`;
         main.appendChild(videoContainer);
+
+
       });
     }
   }
@@ -154,6 +159,19 @@
       fetchPreviousData();
     })
 
+    main.addEventListener("click", function(ev){
+      if(ev.target === saveButton){
+      console.log(`https://www.youtube.com/embed/${favVideoID}?controls=2`);
+      }
+    })
+
+    login.addEventListener("click", function(){
+      console.log("Hi")
+      main.innerHTML = "";
+      main.appendChild(loginDiv);
+      loginDiv.innerHTML = loginCred;
+
+    })
 
     window.onpopstate = function(){
       renderData(movies);
