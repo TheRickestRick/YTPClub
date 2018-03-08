@@ -67,8 +67,13 @@ li.dropdown {
 }
 
 .footer{
+  position:fixed;
   background-color: #333;
+  left:0;
+  width: 100%;
   height: 46px;
+  bottom:0;
+  clear:both;
   display: flex;
   justify-content: center;
 }
@@ -84,4 +89,9 @@ li.dropdown {
  .next {
     color: white;
 
+}
+
+.loginForm{
+  display:flex;
+  flex-direction: column;
 }

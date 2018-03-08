@@ -1,4 +1,14 @@
 
+  var config = {
+    apiKey: "AIzaSyBtoHk5PEG-pm8QTxisTRMuALv7lbFBnMI",
+    authDomain: "ytpclub-196816.firebaseapp.com",
+    databaseURL: "https://ytpclub-196816.firebaseio.com",
+    projectId: "ytpclub-196816",
+    storageBucket: "ytpclub-196816.appspot.com",
+    messagingSenderId: "215843731019"
+  };
+  firebase.initializeApp(config);
+
 
 
   let movies = [];
@@ -16,15 +26,21 @@
   let previousPageButton = document.getElementsByClassName("previous")[0];
   let saveVideo = document.getElementById("saveButton");
   let favVideoID;
-  let login = document.getElementById("login");
+  let favVideoTitle;
+  let favVideoDesc;
+
+  // let login = document.getElementById("login");
+
 
   let loginDiv = document.createElement('div');
   loginDiv.setAttribute("style", "padding:10%")
   let loginCred = `
    <form>
-   <input id="input1" type="text">
-   <input id="input2" type="text">
-   <input id="loginBtn" type="submit">
+   <input class = "loginForm" id="txtEmail" type="text" placeholder="User Name">
+   <input class = "loginForm" id="txtPassword" type="text" placeholder="Password">
+   <input class = "loginForm" id="loginBtn" type="button" value="Login">
+   <input class = "loginForm" id="createAccount" type="button" value="Create Account">
+   <input class = "loginForm" id="logOut" type="button" value="Log out">
    </form>
     `
 
@@ -64,6 +80,8 @@
         let identity = movie.id.videoId;
         let videoActions = document.createElement('div');
         let video = document.createElement('iframe');
+        favVideoDesc = movie.snippet.description;
+        favVideoTitle = movie.snippet.title;
         favVideoID = movie.id.videoId;
         let saveButton = `
         <form>
@@ -160,9 +178,19 @@
     })
 
     main.addEventListener("click", function(ev){
-      if(ev.target === saveButton){
+      if(ev.target.value === "Save Video"){
+      var database = firebase.database();
+      var ref = database.ref("favVideos");
+      var favVideo ={
+        title: favVideoTitle,
+        desc: favVideoDesc,
+        link: `https://www.youtube.com/embed/${favVideoID}?controls=2`,
+      };
+      console.log(favVideoTitle);
+      console.log(favVideoDesc);
       console.log(`https://www.youtube.com/embed/${favVideoID}?controls=2`);
-      }
+      ref.push(favVideo);
+    }
     })
 
     login.addEventListener("click", function(){
@@ -173,6 +201,60 @@
 
     })
 
+
+
+
+
     window.onpopstate = function(){
       renderData(movies);
     }
+
+
+
+    main.addEventListener("click", function(ev){
+      if(ev.target.value === "Login"){
+      const txtEmail = document.getElementById("txtEmail");
+      const txtPassword = document.getElementById("txtPassword");
+      const loginButton = document.getElementById("loginBtn");
+      const createAccount = document.getElementById("createAccount");
+      const email = txtEmail.value;
+      const pass = txtPassword.value;
+      const auth = firebase.auth();
+      const promise = auth.signInWithEmailAndPassword(email, pass);
+      promise.catch(e => console.log(e.message));
+    }
+    })
+
+
+
+
+    main.addEventListener("click", function(ev){
+      if(ev.target.value === "Create Account"){
+        const txtEmail = document.getElementById("txtEmail");
+        const txtPassword = document.getElementById("txtPassword");
+        const loginButton = document.getElementById("loginBtn");
+        const createAccount = document.getElementById("createAccount");
+        const email = txtEmail.value;
+        const pass = txtPassword.value;
+        const auth = firebase.auth();
+        const promise = auth.createUserWithEmailAndPassword(email, pass);
+        promise.catch(e => console.log(e.message));
+
+      }
+
+    });
+
+    main.addEventListener("click", function(ev){
+      if(ev.target.value === "Log out"){
+        firebase.auth().signOut();
+      }
+    });
+
+
+    firebase.auth().onAuthStateChanged(firebaseUser => {
+      if(firebaseUser){
+        console.log(firebaseUser);
+      }else{
+        console.log("Not logged in.");
+      }
+    })
