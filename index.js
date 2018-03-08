@@ -8,26 +8,27 @@ var config = {
   messagingSenderId: "215843731019"
 };
 firebase.initializeApp(config);
+
 let movies = [];
-let youtubekey = localStorage.getItem('youtubekey');
-let main = document.getElementById('main');
-let menuItems = document.getElementsByClassName("dropdown-content")[0];
-let home = document.getElementById('home');
-let searchButton = document.getElementById("searchButton");
-let search = document.getElementById("search");
-let searchTerm;
 let type;
-let nextPageToken;
-let previousPageToken;
-let nextPageButton = document.getElementsByClassName("next")[0];
-let previousPageButton = document.getElementsByClassName("previous")[0];
-let saveVideo = document.getElementById("saveButton");
 let favVideoID;
-let favVideoTitle;
+let searchTerm;
 let favVideoDesc;
 let favVideoThumb;
-let favButton = document.getElementById("favorites");
+let nextPageToken;
+let favVideoTitle;
+let previousPageToken;
+let home = document.getElementById('home');
+let main = document.getElementById('main');
 let loginDiv = document.createElement('div');
+let search = document.getElementById("search");
+let youtubekey = localStorage.getItem('youtubekey');
+let favButton = document.getElementById("favorites");
+let saveVideo = document.getElementById("saveButton");
+let searchButton = document.getElementById("searchButton");
+let nextPageButton = document.getElementsByClassName("next")[0];
+let menuItems = document.getElementsByClassName("dropdown-content")[0];
+let previousPageButton = document.getElementsByClassName("previous")[0];
 let loginCred = `
 <form>
 <input class = "loginForm" id="txtEmail" type="text" placeholder="User Name">
@@ -39,6 +40,30 @@ let loginCred = `
 `
 loginDiv.setAttribute("style", "padding:10%")
 
+function fetchData(){
+  fetch(`https://www.googleapis.com/youtube/v3/search?key=${youtubekey}&part=snippet&maxResults=24&q=YTP ${searchTerm}&type=${type}`)
+  .then((data)=>{
+    return data.json()
+  })
+  .then((data)=>{
+    nextPageToken = data.nextPageToken;
+    movies = data.items;
+    renderData(movies);
+  });
+}
+function fetchNextData(){
+  fetch(`https://www.googleapis.com/youtube/v3/search?pageToken=${nextPageToken}&key=${youtubekey}&part=snippet&maxResults=24&q=YTP ${searchTerm}&type=${type}`)
+  .then((data)=>{
+    return data.json()
+  })
+  .then((data)=>{
+    previousPageToken = data.prevPageToken;
+    nextPageToken = data.nextPageToken;
+    movies = data.items;
+    console.log(data);
+    renderData(movies);
+  });
+}
 function renderData(movies){
   main.innerHTML = "";
 
@@ -97,33 +122,6 @@ function renderData(movies){
     });
   }
 }
-
-function fetchData(){
-  fetch(`https://www.googleapis.com/youtube/v3/search?key=${youtubekey}&part=snippet&maxResults=24&q=YTP ${searchTerm}&type=${type}`)
-  .then((data)=>{
-    return data.json()
-  })
-  .then((data)=>{
-    nextPageToken = data.nextPageToken;
-    movies = data.items;
-    renderData(movies);
-  });
-}
-
-function fetchNextData(){
-  fetch(`https://www.googleapis.com/youtube/v3/search?pageToken=${nextPageToken}&key=${youtubekey}&part=snippet&maxResults=24&q=YTP ${searchTerm}&type=${type}`)
-  .then((data)=>{
-    return data.json()
-  })
-  .then((data)=>{
-    previousPageToken = data.prevPageToken;
-    nextPageToken = data.nextPageToken;
-    movies = data.items;
-    console.log(data);
-    renderData(movies);
-  });
-}
-
 function fetchPreviousData(){
   fetch(`https://www.googleapis.com/youtube/v3/search?pageToken=${previousPageToken}&key=${youtubekey}&part=snippet&maxResults=24&q=YTP ${searchTerm}&type=${type}`)
   .then((data)=>{
@@ -137,20 +135,6 @@ function fetchPreviousData(){
   });
 }
 
-menuItems.addEventListener("click", function(ev){
-    window.location.hash = "#browse";
-    main.innerHTML = "";
-    searchTerm = ev.target.innerText;
-    type = "";
-    fetchData();
-  })
-
-searchButton.addEventListener("click", function(){
-  main.innerHTML = ""
-  searchTerm = search.value;
-  type = "video";
-  fetchData();
-})
 
 home.addEventListener("click", function(){
   window.location.hash = "#home";
@@ -159,20 +143,30 @@ home.addEventListener("click", function(){
   type = "video";
   fetchData();
 })
-
+menuItems.addEventListener("click", function(ev){
+    window.location.hash = "#browse";
+    main.innerHTML = "";
+    searchTerm = ev.target.innerText;
+    type = "";
+    fetchData();
+  })
+searchButton.addEventListener("click", function(){
+  main.innerHTML = ""
+  searchTerm = search.value;
+  type = "video";
+  fetchData();
+})
 nextPageButton.addEventListener("click", function(){
   console.log("yes")
   window.location.hash = "#browse";
   // main.innerHTML = "";
   fetchNextData();
 })
-
 previousPageButton.addEventListener("click", function(){
   console.log("The back button worked!")
   window.location.hash = "#browse";
   fetchPreviousData();
 })
-
 main.addEventListener("click", function(ev){
     if(ev.target.value === "Save Video"){
       var database = firebase.database();
@@ -189,7 +183,6 @@ main.addEventListener("click", function(ev){
       ref.push(favVideo);
     }
 });
-
 login.addEventListener("click", function(){
   console.log("Hi")
   main.innerHTML = "";
@@ -197,7 +190,6 @@ login.addEventListener("click", function(){
   loginDiv.innerHTML = loginCred;
 
 })
-
 main.addEventListener("click", function(ev){
   if(ev.target.value === "Login"){
     const txtEmail = document.getElementById("txtEmail");
@@ -211,7 +203,6 @@ main.addEventListener("click", function(ev){
     promise.catch(e => console.log(e.message));
   }
 });
-
 main.addEventListener("click", function(ev){
 if(ev.target.value === "Create Account"){
   const txtEmail = document.getElementById("txtEmail");
@@ -227,13 +218,11 @@ if(ev.target.value === "Create Account"){
 }
 
 });
-
 main.addEventListener("click", function(ev){
 if(ev.target.value === "Log out"){
   firebase.auth().signOut();
 }
 });
-
 favButton.addEventListener("click", function(){
 var database = firebase.database();
 var ref = database.ref("favVideos");
@@ -293,15 +282,13 @@ function data(data){
   }
 }
 })
-
 firebase.auth().onAuthStateChanged(firebaseUser => {
-if(firebaseUser){
-  console.log(firebaseUser);
-}else{
-  console.log("Not logged in.");
-}
-})
-
+  if(firebaseUser){
+    console.log(firebaseUser);
+  }else{
+    console.log("Not logged in.");
+  }
+});
 window.onpopstate = function(){
 renderData(movies);
 }
