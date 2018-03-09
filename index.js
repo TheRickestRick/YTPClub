@@ -296,5 +296,5 @@ firebase.auth().onAuthStateChanged(firebaseUser => {
   }
 });
 window.onpopstate = function(){
-renderData(movies);
-}
+  renderData(movies);
+};
