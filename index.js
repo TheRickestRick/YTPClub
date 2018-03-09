@@ -15,8 +15,8 @@ let favVideoID;
 let searchTerm;
 let favVideoDesc;
 let favVideoThumb;
-let nextPageToken;
 let favVideoTitle;
+let nextPageToken;
 let previousPageToken;
 let home = document.getElementById('home');
 let main = document.getElementById('main');
@@ -38,7 +38,7 @@ let loginCred = `
 <input class = "loginForm" id="logOut" type="button" value="Log out">
 </form>
 `
-loginDiv.setAttribute("style", "padding:10%")
+loginDiv.setAttribute("class", "cuteBox");
 
 function fetchData(){
   fetch(`https://www.googleapis.com/youtube/v3/search?key=${youtubekey}&part=snippet&maxResults=24&q=YTP ${searchTerm}&type=${type}`)
@@ -74,7 +74,7 @@ function renderData(movies){
     let desc = document.createElement('p');
     desc.innerText = `${movie.snippet.description}`;
     title.innerText = `${movie.snippet.title}`;
-    player.setAttribute("style", "padding:10px; margin:10px; display:inline-grid ; height:350px; width: 320px");
+    player.setAttribute("class", "player");
     thumb.src = `${movie.snippet.thumbnails.medium.url}`;
     main.appendChild(player);
     player.appendChild(thumb);
@@ -135,7 +135,6 @@ function fetchPreviousData(){
   });
 }
 
-
 home.addEventListener("click", function(){
   window.location.hash = "#home";
   main.innerHTML = "";
@@ -143,6 +142,7 @@ home.addEventListener("click", function(){
   type = "video";
   fetchData();
 })
+
 menuItems.addEventListener("click", function(ev){
     window.location.hash = "#browse";
     main.innerHTML = "";
@@ -150,23 +150,25 @@ menuItems.addEventListener("click", function(ev){
     type = "";
     fetchData();
   })
+
 searchButton.addEventListener("click", function(){
   main.innerHTML = ""
   searchTerm = search.value;
   type = "video";
   fetchData();
 })
+
 nextPageButton.addEventListener("click", function(){
-  console.log("yes")
   window.location.hash = "#browse";
   // main.innerHTML = "";
   fetchNextData();
 })
+
 previousPageButton.addEventListener("click", function(){
-  console.log("The back button worked!")
   window.location.hash = "#browse";
   fetchPreviousData();
 })
+//Save video
 main.addEventListener("click", function(ev){
     if(ev.target.value === "Save Video"){
       var database = firebase.database();
@@ -177,19 +179,16 @@ main.addEventListener("click", function(ev){
         description: favVideoDesc,
         videoId: `https://www.youtube.com/embed/${favVideoID}?controls=2`,
       };
-      console.log(favVideoTitle);
-      console.log(favVideoDesc);
-      console.log(`https://www.youtube.com/embed/${favVideoID}?controls=2`);
       ref.push(favVideo);
     }
 });
+//add login form
 login.addEventListener("click", function(){
-  console.log("Hi")
   main.innerHTML = "";
   main.appendChild(loginDiv);
   loginDiv.innerHTML = loginCred;
-
-})
+});
+//Login
 main.addEventListener("click", function(ev){
   if(ev.target.value === "Login"){
     const txtEmail = document.getElementById("txtEmail");
@@ -203,84 +202,91 @@ main.addEventListener("click", function(ev){
     promise.catch(e => console.log(e.message));
   }
 });
+//Create Account
 main.addEventListener("click", function(ev){
-if(ev.target.value === "Create Account"){
-  const txtEmail = document.getElementById("txtEmail");
-  const txtPassword = document.getElementById("txtPassword");
-  const loginButton = document.getElementById("loginBtn");
-  const createAccount = document.getElementById("createAccount");
-  const email = txtEmail.value;
-  const pass = txtPassword.value;
-  const auth = firebase.auth();
-  const promise = auth.createUserWithEmailAndPassword(email, pass);
-  promise.catch(e => console.log(e.message));
+  if(ev.target.value === "Create Account"){
+    const txtEmail = document.getElementById("txtEmail");
+    const txtPassword = document.getElementById("txtPassword");
+    const loginButton = document.getElementById("loginBtn");
+    const createAccount = document.getElementById("createAccount");
+    const email = txtEmail.value;
+    const pass = txtPassword.value;
+    const auth = firebase.auth();
+    const promise = auth.createUserWithEmailAndPassword(email, pass);
+    promise.catch(e => console.log(e.message));
 
-}
-
-});
-main.addEventListener("click", function(ev){
-if(ev.target.value === "Log out"){
-  firebase.auth().signOut();
-}
-});
-favButton.addEventListener("click", function(){
-var database = firebase.database();
-var ref = database.ref("favVideos");
-ref.on('value', data);
-
-function data(data){
-  let videos = data.val();
-  let keys = Object.keys(videos);
-  main.innerHTML = "";
-  console.log(videos);
-  console.log(keys);
-  for(let x=0; x < keys.length; x++){
-    var k = keys[x];
-    let player = document.createElement("div");
-    let thumb = document.createElement('img');
-    let title = document.createElement('h3');
-    let desc = document.createElement('p');
-    desc.innerText = videos[k].description;
-    title.innerText = videos[k].title;
-    player.setAttribute("style", "padding:10px; margin:10px; display:inline-grid ; height:350px; width: 320px");
-    thumb.src = videos[k].thumb;
-    main.appendChild(player);
-    player.appendChild(thumb);
-    player.appendChild(title);
-    player.appendChild(desc);
-
-    window.location.hash = "#browse"
-
-    thumb.addEventListener('mouseover', pick);
-    thumb.addEventListener('mouseout', unpick);
-
-    function pick(){
-      thumb.setAttribute("style", "opacity:0.5");
-    }
-
-    function unpick(){
-      thumb.setAttribute("style", "opacity:1");
-    }
-
-    thumb.addEventListener('click', function(){
-
-      let videoContainer = document.createElement('div');
-      let identity = videos[k].videoId;
-      let videoActions = document.createElement('div');
-      let video = document.createElement('iframe');
-
-
-      window.location.hash = "#video";
-      main.innerHTML = "";
-      videoContainer.appendChild(video);
-      video.setAttribute("style", "padding:10px; margin-left:6%;margin-top:2%; height:600px; width:1200px")
-      video.src = videos[k].videoId;
-      main.appendChild(videoContainer);
-
-
-    });
   }
-}
+});
+//Log out
+main.addEventListener("click", function(ev){
+  if(ev.target.value === "Log out"){
+    firebase.auth().signOut();
+  }
+});
+//Favorite video
+favButton.addEventListener("click", function(){
+  var database = firebase.database();
+  var ref = database.ref("favVideos");
+  ref.on('value', data);
+
+  function data(data){
+    let videos = [];
+    let keys = Object.keys(videos);
+    main.innerHTML = "";
+    console.log(data.val());
+
+    for (var uglyKeyFromFb in data.val()) {
+      if (data.val().hasOwnProperty(uglyKeyFromFb)) {
+        videos.push(data.val()[uglyKeyFromFb]);
+      }
+    }
+
+    for(let video of videos){
+      let player = document.createElement("div");
+      let thumb = document.createElement('img');
+      let title = document.createElement('h3');
+      let desc = document.createElement('p');
+      desc.innerText = video.description;
+      title.innerText = video.title;
+      player.setAttribute("style", "padding:10px; margin:10px; display:inline-grid ; height:350px; width: 320px; background-color:lightgray");
+      thumb.src = video.thumb;
+      main.appendChild(player);
+      player.appendChild(thumb);
+      player.appendChild(title);
+      player.appendChild(desc);
+
+      window.location.hash = "#browse"
+
+      thumb.addEventListener('mouseover', pick);
+      thumb.addEventListener('mouseout', unpick);
+
+      function pick(){
+        thumb.setAttribute("style", "opacity:0.5");
+      }
+
+      function unpick(){
+        thumb.setAttribute("style", "opacity:1");
+      }
+
+      thumb.addEventListener('click', function(){
+
+        let videoContainer = document.createElement('div');
+        let identity = video.videoId;
+        let videoActions = document.createElement('div');
+        let vid = document.createElement('iframe');
+
+
+        window.location.hash = "#video";
+        main.innerHTML = "";
+        videoContainer.appendChild(vid);
+        vid.setAttribute("style", "padding:10px; margin-left:6%;margin-top:2%; height:600px; width:1200px")
+        vid.src = video.videoId;
+        main.appendChild(videoContainer);
+
+
+      });
+    }
+  }
 })
 firebase.auth().onAuthStateChanged(firebaseUser => {
   if(firebaseUser){

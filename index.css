@@ -3,7 +3,9 @@ body{
   background-color: grey;
   margin:0;
 }
-
+#main{
+  margin-left: 10%;
+}
 #searchBar{
   margin-top: 15px;
   margin-right: 20px;
@@ -13,6 +15,27 @@ body{
 
   background-color: white;
   height: 46px;
+}
+
+.player{
+  padding:10px;
+  margin:10px;
+  display:inline-grid;
+  height:350px;
+  width: 320px;
+  background-color: lightgray;
+  border: 2px solid gainsboro;
+}
+
+.player h3{
+}
+
+.player p{
+  overflow: hidden;
+}
+.player img{
+  border: 2px solid black;
+
 }
 
 ul {
@@ -78,6 +101,10 @@ li.dropdown {
   justify-content: center;
 }
 
+#saveButton{
+  margin-left: 45%;
+}
+
 
 .previous {
     color: white;
@@ -94,4 +121,13 @@ li.dropdown {
 .loginForm{
   display:flex;
   flex-direction: column;
+  margin-top:10px;
+  margin-left: 40%;
+}
+
+.cuteBox{
+  padding:10%;
+  border:2px solid black;
+  margin: 20px 30% 10% 30%;
+  background-color: lightgrey;
 }
